@@ -1,0 +1,10 @@
+.split {
+    height: 49.5%;
+    width: 49.5%;
+    position: fixed;
+    z-index: 1;
+    overflow-x: hidden;
+  }
+div.split{
+  background-color: #fff;
+} 
