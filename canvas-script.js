@@ -98,7 +98,7 @@ class CanvasBehavior{
         this.cursor = {
             x: 0,
             y: 0,
-            radius: 20/this.scale
+            radius: 10/this.scale
         }
         this.arrowEnd = {
             arg: 0, //0.713724379 == arctan(sqrt(3)/2)
@@ -227,8 +227,14 @@ function sync() {
     canvasXoverY.cursor.y=neg(div(x,y)).im
     canvasXoverY.arrowEnd.arg=arg(neg(mul(add(pow(neg(div(x,y)),3),1),y)))
     canvasXoverY.draw()
+    if (autoSync_button.checked) {
+        syncData()
+    }
 }
 
+function getData() {
+    return [x,y]
+}
 
 
 /* var p = p_input.value

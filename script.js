@@ -77,6 +77,9 @@ var trace1 = {
 };
 
 var data = [trace1];
+var data2 = [trace1];
+var data3 = [trace1];
+var data4 = [trace1];
 
 var layout = {
   xaxis: {
@@ -90,20 +93,6 @@ var layout = {
     r:0, 
     t:0, 
     b:0},
-  shapes: [
-    {
-        type: 'circle',
-        xref: 'x',
-        yref: 'y',
-        x0: -1,
-        y0: -1,
-        x1: 1,
-        y1: 1,
-        line: {
-            color: 'black',
-            dash: 'dot'
-        }
-    }],
     showlegend: false,
     hovermode: 'closest'
 };
@@ -122,7 +111,7 @@ function getInitCoords(z){
   return [div(mul(6,u),add(mul(3,v),1)),div(sub(1,mul(3,v)),add(1,mul(3,v)))] /* 6u/(3v+1),(1-3V)/(1+3V) */
 }
 
-getData_button.onclick = function () {
+/* getData_button.onclick = function () {
   var [point, direction] = getData()
   var v = mul(exp(complex(0,direction)),complex(-1/2,sqrt(3)/2)) //complex(-1/2,-sqrt(3)/2)
   var z = complex(point.x, point.y)
@@ -131,8 +120,6 @@ getData_button.onclick = function () {
     mul(a,beta(1/3,1/3),v)
   );
   y=mul(y,complex(-1/2,-sqrt(3)/2))
-  /* x=div(add(1,exp(complex(0,2*pi/3))),pow(sub(1,pow(complex(0,1),3)),1/3))
-  y=mul(x,complex(0,1)) */
   console.log([x,y])
   console.log("point : ")
   console.log({x:div(y,x).re,y:div(y,x).im})
@@ -177,4 +164,73 @@ getData_button.onclick = function () {
   Plotly.react('right_top', data, layout);
   Plotly.react('right_bottom', data_2, layout);
 
+} */
+
+function getFunction(a,b) {
+  return (t,v)=>[add(pow(v[1], 2),mul(a,sub(v[0],v[1]),v[0]),mul(b,v[0],v[1],v[0])), add(pow(v[0], 2),mul(a,sub(v[0],v[1]),v[1]),mul(b,v[0],v[1],v[1]))]
+}
+
+function syncData(){
+  var [x,y] = getData()
+
+  var coords = ode(getFunction(a_input.value,b_input.value), [x, y], [0, 200], 0.01)
+
+  data = [{
+    x: coords.map(point => (point[1].re != 0 || point[1].im != 0) ? (div(point[2], point[1]).re) : (null)),
+    y: coords.map(point => (point[1].re != 0 || point[1].im != 0) ? (div(point[2], point[1]).im) : (null)),
+    mode: "lines"
+  }, { x: [div(y, x).re], y: [div(y, x).im], type: "scatter", marker: { color: 'black' } }]
+  
+  data2 = [{
+    x: coords.map(point => (point[2].re != 0 || point[2].im != 0) ? (-div(point[1], point[2]).re) : (null)),
+    y: coords.map(point => (point[2].re != 0 || point[2].im != 0) ? (-div(point[1], point[2]).im) : (null)),
+    mode: "lines"
+  }, { x: [-div(x, y).re], y: [-div(x, y).im], type: "scatter", marker: { color: 'black' } }]
+
+  data3 = [{
+    x: coords.map(point => point[1].re),
+    y: coords.map(point => point[1].im),
+    mode: "lines"
+  }, { x: [x.re], y: [x.im], type: "scatter", marker: { color: 'black' } }]
+
+  data4 = [{
+    x: coords.map(point => point[2].re),
+    y: coords.map(point => point[2].im),
+    mode: "lines"
+  }, { x: [y.re], y: [y.im], type: "scatter", marker: { color: 'black' } }]
+
+
+  layout = {
+    xaxis: {
+      range: [-left_top_canvas.width/600, left_top_canvas.width/600]
+    },
+    yaxis: {
+      range: [-left_top_canvas.height/600, left_top_canvas.height/600]
+    },
+    margin:{
+      l:0, 
+      r:0, 
+      t:0, 
+      b:0},
+      showlegend: false,
+      hovermode: 'closest'
+  };
+
+  Plotly.react('right_top', data, layout);
+  Plotly.react('right_bottom', data2, layout);
+  Plotly.react('left_top', data3, layout);
+  Plotly.react('left_bottom', data4, layout);
+}
+
+getData_button.onclick = syncData
+
+a_input.onchange=function(){
+  if (autoSync_button.checked) {
+    syncData()
+}
+}
+b_input.onchange=function(){
+  if (autoSync_button.checked) {
+    syncData()
+}
 }
