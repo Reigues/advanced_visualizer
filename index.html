@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="intersect.js"></script>
     <script src="methods.js"></script>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -10,14 +11,39 @@
     <title>Document</title>
 </head>
 <body style="background-color: black;">
-    <div class="split" id="left_top" style="left:0; top:0; z-index:-2"></div>
-    <canvas class="split" id="left_top_canvas" style="left:0; top:0; z-index:-1;"></canvas>
-    <div class="split" id="left_bottom" style="left:0; bottom:0; z-index:-2"></div>
-    <canvas class="split" id="left_bottom_canvas" style="left:0; bottom:0; z-index:-1;"></canvas>
-    <div class="split" id="right_top" style="right:0; top:0; z-index:-2"></div>
-    <canvas class="split" id="right_top_canvas" style="right:0; top:0; z-index:-1;"></canvas>
-    <div class="split" id="right_bottom" style="right:0; bottom:0; z-index:-2;"></div>
-    <canvas class="split" id="right_bottom_canvas" style="right:0; bottom:0; z-index:-1;"></canvas>
+    <div class="split" id="left_top" style="left:0; top:0; z-index:-3"></div>
+    <canvas class="split" id="left_top_canvas" style="left:0; top:0; z-index:-2;"></canvas>
+    <div class="split" id="left_bottom" style="left:0; bottom:0; z-index:-3"></div>
+    <canvas class="split" id="left_bottom_canvas" style="left:0; bottom:0; z-index:-2;"></canvas>
+    <div class="split" id="right_top" style="right:0; top:0; z-index:-3"></div>
+    <canvas class="split" id="right_top_canvas" style="right:0; top:0; z-index:-2;"></canvas>
+    <div class="split" id="right_bottom" style="right:0; bottom:0; z-index:-3;"></div>
+    <canvas class="split" id="right_bottom_canvas" style="right:0; bottom:0; z-index:-2;"></canvas>
+
+    <canvas class="split billiard" id="top_billiard" style="left:0; top:0; z-index:-1;background-color: #fff;"></canvas>
+    <canvas class="split billiard" id="bottom_billiard" style="left:0; bottom:0; z-index:-1;background-color: #fff;"></canvas>
+    <div style="position:absolute; left:10px; top:calc(50% - 35px); width:500px;" class="wrapper billiard">
+        <label for="p_input">p = </label>
+        <input type="number" value="1" id="p_input" style="width:8em;">
+        <label for="q_input">q = </label>
+        <input type="number" value="0" id="q_input" style="width:8em;">
+    </div>
+    <div style="position:absolute; left:10px; top:calc(50% + 15px); width:400px;" class="wrapper billiard">
+        <label for="lineNumber_input">Nombre de lignes = </label>
+        <input id="lineNumber_input" type="number" value="10" min="0" style="width:10em;"/>
+    </div>
+    <div style="position:absolute; left:10px; top:calc(50% + 40px); width:500px;" class="wrapper billiard">
+        <label for="lineNumber_proposition">Proposition de nombre de lignes :</label>
+        <label id="lineNumber_proposition">NaN</label>
+    </div>
+
+    <div style="position:absolute; left:calc(50% - 100px); top:calc(50% - 11px);" class="wrapper">
+        <select name="Type de fenêtre" id="window_type">
+            <option value="x_y">x et y</option>
+            <option value="billiard">Billard</option>
+        </select> 
+    </div>
+
     <div style="position:absolute; left:10px; top:15px; width:400px;" class="wrapper">
         <label for="range_input">Précision : </label>
         <input type="range" min="0" max="10" value="0" id="range_input">

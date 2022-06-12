@@ -104,14 +104,22 @@ var config = {
 
 Plotly.newPlot('right_top', data, layout);
 Plotly.newPlot('right_bottom', data, layout);
+Plotly.newPlot('left_top', data, layout);
+Plotly.newPlot('left_bottom', data, layout);
 
-function getInitCoords(z){
+var billiardElements = document.getElementsByClassName("billiard");
+
+Array.prototype.forEach.call(billiardElements, function(el) {
+    el.style.display = "none";
+});
+
+/* function getInitCoords(z){
   var u = weierstrassP(z,0,1/27);
   var v = weierstrassPPrime(z,0,1/27);
-  return [div(mul(6,u),add(mul(3,v),1)),div(sub(1,mul(3,v)),add(1,mul(3,v)))] /* 6u/(3v+1),(1-3V)/(1+3V) */
+  return [div(mul(6,u),add(mul(3,v),1)),div(sub(1,mul(3,v)),add(1,mul(3,v)))]
 }
 
-/* getData_button.onclick = function () {
+getData_button.onclick = function () {
   var [point, direction] = getData()
   var v = mul(exp(complex(0,direction)),complex(-1/2,sqrt(3)/2)) //complex(-1/2,-sqrt(3)/2)
   var z = complex(point.x, point.y)
@@ -173,7 +181,7 @@ function getFunction(a,b) {
 function syncData(){
   var [x,y] = getData()
 
-  var coords = ode(getFunction(a_input.value,b_input.value), [x, y], [0, 200], 0.01)
+  var coords = ode(getFunction(a_input.value,b_input.value), [x, y], [0, 200], 0.005)
 
   data = [{
     x: coords.map(point => (point[1].re != 0 || point[1].im != 0) ? (div(point[2], point[1]).re) : (null)),
@@ -202,10 +210,10 @@ function syncData(){
 
   layout = {
     xaxis: {
-      range: [-left_top_canvas.width/600, left_top_canvas.width/600]
+      range: [-left_top_canvas.width/200, left_top_canvas.width/200]
     },
     yaxis: {
-      range: [-left_top_canvas.height/600, left_top_canvas.height/600]
+      range: [-left_top_canvas.height/200, left_top_canvas.height/200]
     },
     margin:{
       l:0, 
@@ -233,4 +241,16 @@ b_input.onchange=function(){
   if (autoSync_button.checked) {
     syncData()
 }
+}
+
+window_type.onchange=function(){
+  if (window_type.selectedIndex==0) {
+    Array.prototype.forEach.call(billiardElements, function(el) {
+      el.style.display = "none";
+  });
+  } else{
+    Array.prototype.forEach.call(billiardElements, function(el) {
+      el.style.display = "block";
+  });
+  }
 }
