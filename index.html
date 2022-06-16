@@ -13,14 +13,32 @@
 <body style="background-color: black;">
     <div class="split" id="left_top" style="left:0; top:0; z-index:-3"></div>
     <canvas class="split" id="left_top_canvas" style="left:0; top:0; z-index:-2;"></canvas>
-    <input type="image" src="zoom_in.svg" width="30px">
-
+    <div style="position:absolute; left:calc(49.5% - 40px); top:calc(50% - 100px); z-index:-2; display: flex; flex-direction:column;">
+        <input type="image" src="zoom_in.svg" width="35px">
+        <input type="image" src="zoom_out.svg" width="35px">
+    </div>
+    
     <div class="split" id="left_bottom" style="left:0; bottom:0; z-index:-3"></div>
     <canvas class="split" id="left_bottom_canvas" style="left:0; bottom:0; z-index:-2;"></canvas>
+    <div style="position:absolute; left:calc(49.5% - 40px); bottom:35px; z-index:-2; display: flex; flex-direction:column;">
+        <input type="image" src="zoom_in.svg" width="35px">
+        <input type="image" src="zoom_out.svg" width="35px">
+    </div>
+
     <div class="split" id="right_top" style="right:0; top:0; z-index:-3"></div>
     <canvas class="split" id="right_top_canvas" style="right:0; top:0; z-index:-2;"></canvas>
+    <div style="position:absolute; right:5px; top:calc(50% - 100px); z-index:-2; display: flex; flex-direction:column;">
+        <input type="image" src="zoom_in.svg" width="35px">
+        <input type="image" src="zoom_out.svg" width="35px">
+    </div>
+
     <div class="split" id="right_bottom" style="right:0; bottom:0; z-index:-3;"></div>
     <canvas class="split" id="right_bottom_canvas" style="right:0; bottom:0; z-index:-2;"></canvas>
+    <div style="position:absolute; right:5px; bottom:30px; z-index:-2; display: flex; flex-direction:column;">
+        <input type="image" src="zoom_in.svg" width="35px">
+        <input type="image" src="zoom_out.svg" width="35px">
+    </div>
+
 
     <canvas class="split billiard" id="top_billiard" style="left:0; top:0; z-index:-1;background-color: #fff;"></canvas>
     <canvas class="split billiard" id="bottom_billiard" style="left:0; bottom:0; z-index:-1;background-color: #fff;"></canvas>
@@ -46,21 +64,33 @@
         </select> 
     </div>
 
-    <div style="position:absolute; left:10px; top:15px; width:300px;" class="wrapper">
+    <div style="position:absolute; left:10px; top:10px; width:300px;" class="wrapper">
         <label for="range_input">Précision : </label>
         <input type="range" min="0" max="10" value="0" id="range_input">
     </div>
+    <div style="position:absolute; left:10px; top:50px; width:400px;" class="wrapper">
+        <label for="time_input">Temps total : </label>
+        <input type="number" min="0" value="100" id="time_input" step="any">
+    </div>
     <div style="position:absolute; left:300px; top:10px; width:500px;" class="wrapper">
         <label for="a_input">a = </label>
-        <input type="number" value="0" id="a_input" style="width:6em;">
+        <input type="number" value="0" id="a_input" style="width:6em;" step="any">
         <label for="b_input">b = </label>
-        <input type="number" value="0" id="b_input" style="width:6em;">
+        <input type="number" value="0" id="b_input" style="width:6em;" step="any">
+    </div>
+    <div style="position:absolute; left:10px; top:85px; width:400px;" class="wrapper">
+        <label for="partialTime_input">Temps partiel : </label>
+        <input type="number" min="0" value="50" id="partialTime_input" step="any">
     </div>
     <div style="position: absolute; left: calc(50.5% + 20px); top: 10px; width:300px; z-index:5;" class="wrapper">
         <label for="autoSync_button">Synchronisation automatique : </label>
         <input id="autoSync_button" type="checkbox" onchange="getData_button.disabled = this.checked; if(this.checked) sync();"></input>
     </div>
-    <button id="getData_button" style="position:absolute; top:40px; left: calc(50.5% + 20px); z-index: 5;">Synchroniser</button>
+    <button id="getData_button" style="position:absolute; top:70px; left: calc(50.5% + 20px); z-index: 5;">Synchroniser</button>
+    <div style="position: absolute; left: calc(50.5% + 20px); top: 40px; width:300px; z-index:5;" class="wrapper">
+        <label for="step_input">Pas : </label>
+        <input id="step_input" type="number" min="0" value="0.001" step="any"></input>
+    </div>
 </body>
 <script src="canvas-script.js"></script>
 <script src="script.js"></script>

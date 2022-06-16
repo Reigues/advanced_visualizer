@@ -179,13 +179,20 @@ function getFunction(a,b) {
 }
 
 function syncData(){
-  var [x,y] = getData()
+  var [x, y, layouts] = getData()
 
-  var coords = ode(getFunction(a_input.value,b_input.value), [x, y], [0, 200], 0.005)
+  var coords = ode(getFunction(a_input.value,b_input.value), [x, y],[0,parseFloat(partialTime_input.value)],parseFloat(step_input.value))
+
+  var otherCoords =  ode(getFunction(a_input.value,b_input.value), [coords[coords.length-1][1], coords[coords.length-1][2]],[parseFloat(partialTime_input.value),parseFloat(time_input.value)],parseFloat(step_input.value))
+
 
   data = [{
     x: coords.map(point => (point[1].re != 0 || point[1].im != 0) ? (div(point[2], point[1]).re) : (null)),
     y: coords.map(point => (point[1].re != 0 || point[1].im != 0) ? (div(point[2], point[1]).im) : (null)),
+    mode: "lines"
+  },{
+    x: otherCoords.map(point => (point[1].re != 0 || point[1].im != 0) ? (div(point[2], point[1]).re) : (null)),
+    y: otherCoords.map(point => (point[1].re != 0 || point[1].im != 0) ? (div(point[2], point[1]).im) : (null)),
     mode: "lines"
   }, { x: [div(y, x).re], y: [div(y, x).im], type: "scatter", marker: { color: 'black' } }]
   
@@ -193,17 +200,29 @@ function syncData(){
     x: coords.map(point => (point[2].re != 0 || point[2].im != 0) ? (-div(point[1], point[2]).re) : (null)),
     y: coords.map(point => (point[2].re != 0 || point[2].im != 0) ? (-div(point[1], point[2]).im) : (null)),
     mode: "lines"
+  },{
+    x: otherCoords.map(point => (point[2].re != 0 || point[2].im != 0) ? (-div(point[1], point[2]).re) : (null)),
+    y: otherCoords.map(point => (point[2].re != 0 || point[2].im != 0) ? (-div(point[1], point[2]).im) : (null)),
+    mode: "lines"
   }, { x: [-div(x, y).re], y: [-div(x, y).im], type: "scatter", marker: { color: 'black' } }]
 
   data3 = [{
     x: coords.map(point => point[1].re),
     y: coords.map(point => point[1].im),
     mode: "lines"
+  },{
+    x: otherCoords.map(point => point[1].re),
+    y: otherCoords.map(point => point[1].im),
+    mode: "lines"
   }, { x: [x.re], y: [x.im], type: "scatter", marker: { color: 'black' } }]
 
   data4 = [{
     x: coords.map(point => point[2].re),
     y: coords.map(point => point[2].im),
+    mode: "lines"
+  },{
+    x: otherCoords.map(point => point[2].re),
+    y: otherCoords.map(point => point[2].im),
     mode: "lines"
   }, { x: [y.re], y: [y.im], type: "scatter", marker: { color: 'black' } }]
 
@@ -224,10 +243,10 @@ function syncData(){
       hovermode: 'closest'
   };
 
-  Plotly.react('right_top', data, layout);
-  Plotly.react('right_bottom', data2, layout);
-  Plotly.react('left_top', data3, layout);
-  Plotly.react('left_bottom', data4, layout);
+  Plotly.react('left_top', data3, layouts[0]);
+  Plotly.react('left_bottom', data4, layouts[1]);
+  Plotly.react('right_top', data, layouts[2]);
+  Plotly.react('right_bottom', data2, layouts[3]);
 }
 
 getData_button.onclick = syncData
@@ -253,4 +272,31 @@ window_type.onchange=function(){
       el.style.display = "block";
   });
   }
+
+}
+
+step_input.onchange=function(e){
+  if(this.value=="0") this.value = 0.001;
+  syncData()
+}
+
+time_input.onchange=function(e){
+  syncData()
+}
+
+partialTime_input.onchange=function(e){
+  syncData()
+}
+
+step_input.onkeydown=function(e){
+  if(e.key=="-") {
+    console.log("-")
+        return false;
+    }
+}
+
+window.onresize = function () {
+  setTimeout(function(){
+    window.location.reload();
+  });
 }

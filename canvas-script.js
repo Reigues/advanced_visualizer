@@ -34,11 +34,13 @@ class CanvasBehavior{
         //this.context.fillRect(cursor.x,cursor.y,cursor.width,cursor.height)
         this.context.lineWidth = 3/this.scale;
         this.context.beginPath();
-        this.context.arc(this.cursor.x, this.cursor.y, this.cursor.radius, 0, 2 * Math.PI, false);
+        this.context.arc(this.cursor.x, this.cursor.y, this.cursor.size, 0, 2 * Math.PI, false);
         this.context.fillStyle="black"
         this.context.fill();
         if (highlight_cursor) {
+            this.context.beginPath()
             this.context.lineWidth = 3/this.scale;
+            this.context.arc(this.cursor.x, this.cursor.y, this.cursor.radius, 0, 2 * Math.PI, false);
             this.context.strokeStyle = 'blue';
             this.context.stroke();
         }
@@ -65,15 +67,16 @@ class CanvasBehavior{
         } */
         this.context.save();
         this.context.scale(1, -1);
+        this.context.textAlign='right'
         if (isCursorModified) {
             this.context.fillStyle="black"
             this.context.font = `${30/this.scale}px Arial`; 
-            this.context.fillText(`X = ${(this.cursor.x).toFixed(Math.ceil(parseInt(range_input.value)+Math.log10(this.scale)))}; Y = ${(this.cursor.y).toFixed(Math.ceil(parseInt(range_input.value)+Math.log10(this.scale)))}`, (10-this.translateX)/this.scale, (100-this.translateY)/this.scale);
+            this.context.fillText(`X = ${(this.cursor.x).toFixed(Math.ceil(parseInt(range_input.value)+Math.log10(this.scale)))}; Y = ${(this.cursor.y).toFixed(Math.ceil(parseInt(range_input.value)+Math.log10(this.scale)))}`, (this.canvas.width-10-this.translateX)/this.scale, (30-this.translateY)/this.scale);
         }
         if (this.arrow && isArrowEndModified) {
             this.context.fillStyle="black"
             this.context.font = `${30/this.scale}px Arial`;
-            this.context.fillText(`angle = ${(-this.arrowEnd.arg/Math.PI).toFixed(6)} PI`, (10-this.translateX)/this.scale, (100-this.translateY)/this.scale);
+            this.context.fillText(`angle = ${(-this.arrowEnd.arg/Math.PI).toFixed(6)} PI`, (this.canvas.width-10-this.translateX)/this.scale, (30-this.translateY)/this.scale);
         }
         this.context.restore();
     }
@@ -87,7 +90,7 @@ class CanvasBehavior{
         this.sync.bind(this)()
     }
 
-    constructor(canvas, sync, arrow=false, scale=100, translateX=(w)=>w/2, translateY=(h)=>h/2){
+    constructor(canvas, sync, arrow=false, scale=100, translateX=(w)=>w/2, translateY=(h)=>h/2, zoom=true){
 
         this.canvas = canvas
         this.sync = sync
@@ -104,10 +107,27 @@ class CanvasBehavior{
         this.context.translate(this.translateX,this.translateY);
         this.context.scale(this.scale,-this.scale);
 
+        this.layout = {
+            xaxis: {
+              range: [-this.canvas.width/(2*this.scale), this.canvas.width/(2*this.scale)]
+            },
+            yaxis: {
+              range: [-this.canvas.height/(2*this.scale), this.canvas.height/(2*this.scale)]
+            },
+            margin:{
+              l:0, 
+              r:0, 
+              t:0, 
+              b:0},
+              showlegend: false,
+              hovermode: 'closest'
+        };
+
         this.cursor = {
             x: 0,
             y: 0,
-            radius: 10/this.scale
+            radius: 10/this.scale,
+            size:5/this.scale
         }
         this.arrowEnd = {
             arg: 0, //0.713724379 == arctan(sqrt(3)/2)
@@ -173,15 +193,76 @@ class CanvasBehavior{
             this.posInArrowEnd = null
             this.draw()
         }.bind(this)
-        window.onresize=function(e){
-            this.context.canvas.width  = 0.5*window.innerWidth;
-            this.context.canvas.height = 0.5*window.innerHeight;
-            this.translateX = canvas.width/2
-            this.translateY = canvas.height/2
-            this.context.translate(this.translateX,this.translateY);
-            this.context.scale(this.scale,-this.scale);
-            this.draw();
-        }.bind(this)
+
+        if (zoom) {
+            this.canvas.nextElementSibling.children[0].onclick=function(){
+                this.scale*=2
+                this.context.scale(2,2);
+    
+                this.cursor.radius= 10/this.scale
+                this.cursor.size = 5/this.scale
+                
+                this.arrowEnd.r = 100/this.scale
+                this.arrowEnd.radius = 10/this.scale
+    
+                this.draw()
+    
+                this.layout = {
+                    xaxis: {
+                      range: [-this.canvas.width/(2*this.scale), this.canvas.width/(2*this.scale)]
+                    },
+                    yaxis: {
+                      range: [-this.canvas.height/(2*this.scale), this.canvas.height/(2*this.scale)]
+                    },
+                    margin:{
+                      l:0, 
+                      r:0, 
+                      t:0, 
+                      b:0},
+                      showlegend: false,
+                      hovermode: 'closest'
+                };
+    
+                if (autoSync_button.checked) {
+                    syncData()
+                }
+    
+            }.bind(this)
+    
+            this.canvas.nextElementSibling.children[1].onclick=function(){
+                this.scale*=0.5
+                this.context.scale(0.5,0.5);
+    
+                this.cursor.radius= 10/this.scale
+                this.cursor.size = 5/this.scale
+                
+                this.arrowEnd.r = 100/this.scale
+                this.arrowEnd.radius = 10/this.scale
+    
+                this.draw()
+    
+                this.layout = {
+                    xaxis: {
+                      range: [-this.canvas.width/(2*this.scale), this.canvas.width/(2*this.scale)]
+                    },
+                    yaxis: {
+                      range: [-this.canvas.height/(2*this.scale), this.canvas.height/(2*this.scale)]
+                    },
+                    margin:{
+                      l:0, 
+                      r:0, 
+                      t:0, 
+                      b:0},
+                      showlegend: false,
+                      hovermode: 'closest'
+                };
+    
+                if (autoSync_button.checked) {
+                    syncData()
+                }
+    
+            }.bind(this)    
+        }
     }
 }
 
@@ -313,7 +394,7 @@ class BilliardBehavior extends CanvasBehavior{
     }
 
     constructor(canvas, canvas2, sync){
-        super(canvas, sync, true, 300, (w)=>w/2, (h)=>h*(1/2+sqrt(3)/12))
+        super(canvas, sync, true, 300, (w)=>w/2, (h)=>h*(1/2+sqrt(3)/12),false)
 
         this.cursor.x = 1/8
         this.cursor.y = sqrt(3)/6/* 
@@ -384,7 +465,7 @@ function sync_y() {
 
 function sync_yoverx() {
     let z = complex(this.cursor.x,this.cursor.y)
-    let omega = complex(this.arrowEnd.r*Math.cos(this.arrowEnd.arg),this.arrowEnd.r*Math.sin(this.arrowEnd.arg))
+    let omega = complex(Math.cos(this.arrowEnd.arg),Math.sin(this.arrowEnd.arg))
     x = div(omega,sub(1,pow(z,3)))
     y = div(mul(z,omega),sub(1,pow(z,3)))
     sync()
@@ -435,21 +516,25 @@ function sync() {
     canvasY.cursor.x=y.re
     canvasY.cursor.y=y.im
     canvasY.draw()
-    canvasYoverX.cursor.x=div(y,x).re
-    canvasYoverX.cursor.y=div(y,x).im
-    canvasYoverX.arrowEnd.arg=arg(mul(sub(1,pow(div(y,x),3)),x))
-    canvasYoverX.draw()
-    canvasXoverY.cursor.x=neg(div(x,y)).re
-    canvasXoverY.cursor.y=neg(div(x,y)).im
-    canvasXoverY.arrowEnd.arg=arg(neg(mul(add(pow(neg(div(x,y)),3),1),y)))
-    canvasXoverY.draw()
+    if(x.re!=0&&x.im!=0){
+        canvasYoverX.cursor.x=div(y,x).re
+        canvasYoverX.cursor.y=div(y,x).im
+        canvasYoverX.arrowEnd.arg=arg(mul(sub(1,pow(div(y,x),3)),x))
+        canvasYoverX.draw()
+    }
+    if (y.re!=0&&y.im!=0) {
+        canvasXoverY.cursor.x=neg(div(x,y)).re
+        canvasXoverY.cursor.y=neg(div(x,y)).im
+        canvasXoverY.arrowEnd.arg=arg(neg(mul(add(pow(neg(div(x,y)),3),1),y)))
+        canvasXoverY.draw()
+    }
     if (autoSync_button.checked) {
         syncData()
     }
 }
 
 function getData() {
-    return [x,y]
+    return [x, y, [canvasX.layout, canvasY.layout, canvasYoverX.layout, canvasXoverY.layout]]
 }
 
 
