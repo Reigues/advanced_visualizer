@@ -146,6 +146,7 @@ class CanvasBehavior{
                 this.syncData(true)
             }
             this.draw(this.inCursor, this.inArrowEnd, this.posInCursor != null, this.posInArrowEnd != null)
+            //this.posInCursor==null && this.posInArrowEnd==null && !this.inCursor && !this.inArrowEnd
         }
 
         this.canvas.onmousemove = mouseMove.bind(this);
@@ -167,7 +168,7 @@ class CanvasBehavior{
             this.posInCursor = null
             this.posInArrowEnd = null
         }.bind(this)
-        canvas.onmouseleave = function () {
+        canvas.onmouseleave = function (e) {
             this.posInCursor = null
             this.posInArrowEnd = null
             this.draw()
