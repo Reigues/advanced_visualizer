@@ -146,6 +146,9 @@ class CanvasBehavior{
         this.posInArrowEnd = null;
         this.initialPos = null;
 
+        this.lastAngle = null;
+        this.sumAngle = null;
+
         function mouseMove(e) {
             this.offset = CanvasBehavior.getCoords(this.canvas)
             this.offset.top=(-this.offset.top+this.translateY)/this.scale
@@ -162,7 +165,16 @@ class CanvasBehavior{
                 this.syncData()
             }
             if (this.posInArrowEnd != null) {
-                this.arrowEnd.arg = this.posInArrowEnd.arg + this.initialPos.arg - Math.pow(10,-range_input.value)*(this.initialPos.arg - Math.atan2((eY - this.cursor.y - this.offset.top),(eX - this.cursor.x - this.offset.left)))
+                this.sumAngle = this.sumAngle + (Math.atan2((eY - this.cursor.y - this.offset.top),(eX - this.cursor.x - this.offset.left))-this.lastAngle)
+                if ((Math.atan2((eY - this.cursor.y - this.offset.top),(eX - this.cursor.x - this.offset.left))-this.lastAngle)<-Math.PI) {
+                    this.sumAngle+=Math.PI*2                    
+                }
+                if ((Math.atan2((eY - this.cursor.y - this.offset.top),(eX - this.cursor.x - this.offset.left))-this.lastAngle)>Math.PI) {
+                    this.sumAngle-=Math.PI*2                    
+                }
+                this.lastAngle = Math.atan2((eY - this.cursor.y - this.offset.top),(eX - this.cursor.x - this.offset.left))
+
+                this.arrowEnd.arg = this.posInArrowEnd.arg + this.initialPos.arg + Math.pow(10,-range_input.value)*(this.sumAngle)
                 this.syncData(true)
             }
             this.draw(this.inCursor, this.inArrowEnd, this.posInCursor != null, this.posInArrowEnd != null)
@@ -182,6 +194,8 @@ class CanvasBehavior{
             if (this.posInArrowEnd == null && this.inArrowEnd) {
                 this.posInArrowEnd = { arg: this.arrowEnd.arg - Math.atan2((eY - this.cursor.y - this.offset.top),(eX - this.cursor.x - this.offset.left))}
                 this.initialPos = {arg:Math.atan2((eY - this.cursor.y - this.offset.top),(eX - this.cursor.x - this.offset.left))}
+                this.sumAngle = 0
+                this.lastAngle = this.initialPos.arg
             }
         }.bind(this)
         canvas.onmouseup = function (e) {
