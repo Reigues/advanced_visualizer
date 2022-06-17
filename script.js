@@ -281,6 +281,10 @@ step_input.onchange=function(e){
 }
 
 time_input.onchange=function(e){
+  partialTime_input.setAttribute('max', this.value);
+  if (partialTime_input.value>this.value) {
+    partialTime_input.value = this.value
+  }
   syncData()
 }
 
